@@ -79,6 +79,13 @@ Include in your output the name of the court, and the name of the member
 formatted as a single column. Ensure no duplicate data, and order by
 the member name. */
 
+SELECT Facilities.name AS Court, CONCAT(Members.firstname, ' ', Members.surname) AS Member
+FROM Bookings
+INNER JOIN Facilities ON Bookings.facid = Facilities.facid
+AND Facilities.name LIKE 'Tennis Court%'
+INNER JOIN Members ON Bookings.memid = Members.memid
+GROUP BY Facilities.name, Members.surname, Members.firstname
+ORDER BY Member, Court
 
 /* Q8: How can you produce a list of bookings on the day of 2012-09-14 which
 will cost the member (or guest) more than $30? Remember that guests have
@@ -87,10 +94,45 @@ the guest user's ID is always 0. Include in your output the name of the
 facility, the name of the member formatted as a single column, and the cost.
 Order by descending cost, and do not use any subqueries. */
 
+SELECT Facilities.name AS Facility, 
+	   CONCAT(Members.firstname, ' ', Members.surname) AS Member,
+	CASE WHEN Bookings.memid = 0 THEN Facilities.guestcost * Bookings.slots
+		 ELSE Facilities.membercost * Bookings.slots END AS Cost
+FROM Bookings
+INNER JOIN Facilities ON Bookings.facid = Facilities.facid
+AND Bookings.starttime LIKE '2012-09-14%'
+INNER JOIN Members ON Bookings.memid = Members.memid
+HAVING Cost > 30
+ORDER BY Cost DESC
+
 
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
+
+SELECT Facilities.name AS Facility, 
+	   CONCAT(Members.firstname, ' ', Members.surname) AS Member,
+	CASE WHEN B.memid = 0 THEN Facilities.guestcost * B.slots
+		 ELSE Facilities.membercost * B.slots END AS Cost
+FROM (
+    SELECT *
+	FROM Bookings
+    WHERE starttime LIKE  '2012-09-14%'
+    ) B
+INNER JOIN Facilities ON Bookings.facid = Facilities.facid
+INNER JOIN Members ON B.memid = Members.memid
+HAVING Cost > 30
+ORDER BY Cost DESC
 
 
 /* Q10: Produce a list of facilities with a total revenue less than 1000.
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
+
+SELECT Facilities.name AS Facility, 
+	   SUM(CASE WHEN Bookings.memid = 0 THEN Facilities.guestcost * Bookings.slots
+				ELSE Facilities.membercost * Bookings.slots END
+           ) AS TotalRevenue
+FROM Bookings
+JOIN Facilities ON Bookings.facid = Facilities.facid
+GROUP BY Facility
+HAVING TotalRevenue < 1000
+ORDER BY TotalRevenue
