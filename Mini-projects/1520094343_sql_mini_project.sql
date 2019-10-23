@@ -69,10 +69,9 @@ FROM `Facilities`
 /* Q6: You'd like to get the first and last name of the last member(s)
 who signed up. Do not use the LIMIT clause for your solution. */
 
-SELECT `firstname`,`surname` 
+SELECT `firstname`,`surname`, 'joindate'
 FROM Members
 ORDER BY `joindate` DESC
-LIMIT 1
 
 /* Q7: How can you produce a list of all members who have used a tennis court?
 Include in your output the name of the court, and the name of the member
