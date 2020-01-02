@@ -1,7 +1,7 @@
 # SpringboardDSC
-Repository of assignments for Data Science Career Track
+## Repository of assignments for Data Science Career Track
 
-Mini-Projects
+### Mini-Projects
 
   API_project
   
@@ -17,6 +17,6 @@ Mini-Projects
     
     Bootstrapping
   
-Capstone 1
+### Capstone 1
 
 
